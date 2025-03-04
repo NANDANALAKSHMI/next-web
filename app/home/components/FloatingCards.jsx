@@ -13,6 +13,20 @@ const FloatingCards = ({
 }) => {
   const [positions, setPositions] = useState([]);
   const [dropBoxPosition, setDropBoxPosition] = useState({ x: 0, y: 0 });
+  const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+
+      const handleResize = () => {
+        setWindowSize({ width: window.innerWidth, height: window.innerHeight });
+      };
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
 
   useEffect(() => {
     setPositions(floatingCards.map(card => ({
@@ -59,26 +73,17 @@ const FloatingCards = ({
         const cardX = useTransform(
           scrollYProgress,
           [0, 0.8],
-          [0, dropBoxPosition.x - (parseFloat(card.left) * (window.innerWidth / 100))]
+          [0, dropBoxPosition.x - (parseFloat(card.left) * (windowSize.width / 100))]
         );
 
         const cardY = useTransform(
           scrollYProgress,
           [0, 0.8],
-          [0, dropBoxPosition.y - (parseFloat(card.top) * (window.innerHeight / 100))]
+          [0, dropBoxPosition.y - (parseFloat(card.top) * (windowSize.height / 100))]
         );
 
-        const cardScale = useTransform(
-          scrollYProgress,
-          [0, 0.8, 1],
-          [1, 0.8, 0.5]
-        );
-
-        const cardOpacity = useTransform(
-          scrollYProgress,
-          [0, 0.7, 1],
-          [1, 0.8, 0]
-        );
+        const cardScale = useTransform(scrollYProgress, [0, 0.8, 1], [1, 0.8, 0.5]);
+        const cardOpacity = useTransform(scrollYProgress, [0, 0.7, 1], [1, 0.8, 0]);
 
         return (
           <React.Fragment key={card.id}>
