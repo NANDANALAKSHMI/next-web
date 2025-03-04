@@ -1,13 +1,15 @@
-import React from 'react'
+import React from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const RenderCardContent = () => {
-    switch(currentCard.cardType) {
+const HoverCard = ({ card, hoveredIcon, setHoveredIcon }) => {
+  const renderCardContent = () => {
+    switch(card.cardType) {
       case 'taskList':
         return (
           <div className="border border-blue-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64">
             <div className="flex items-center justify-between mb-2">
               <div className="text-xs text-gray-500">TASKS</div>
-              <motion.div 
+              <motion.div
                 className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center cursor-pointer"
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
@@ -54,7 +56,7 @@ const RenderCardContent = () => {
           <div className="border border-red-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64">
             <div className="flex items-center justify-between mb-2">
               <div className="text-xs text-gray-500">NOTES</div>
-              <motion.div 
+              <motion.div
                 className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center cursor-pointer"
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
@@ -85,13 +87,13 @@ const RenderCardContent = () => {
             </AnimatePresence>
           </div>
         );
-        
+      
       case 'analytics':
         return (
           <div className="border border-gray-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64">
             <div className="flex items-center justify-between mb-2">
               <div className="text-xs text-gray-500">ANALYTICS</div>
-              <motion.div 
+              <motion.div
                 className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer"
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
@@ -141,13 +143,13 @@ const RenderCardContent = () => {
             </AnimatePresence>
           </div>
         );
-        
+      
       case 'mobile':
         return (
           <div className="border border-purple-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64">
             <div className="flex items-center justify-between mb-2">
               <div className="text-xs text-gray-500">MOBILE</div>
-              <motion.div 
+              <motion.div
                 className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center cursor-pointer"
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
@@ -185,39 +187,38 @@ const RenderCardContent = () => {
             </AnimatePresence>
           </div>
         );
-        
-      // For other card types, we'll use a generic feedback card template with customizations
+      
       default:
         return (
-          <div className={`border border-${currentCard.color.split('-')[1]}-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64 z-10`}>
+          <div className={`border border-${card.color.split('-')[1]}-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64 z-10`}>
             <div className="flex items-center justify-between mb-1">
               <div className="text-xs text-gray-500">CYCLE</div>
-              <motion.div 
-                className={`w-8 h-8 ${currentCard.color} rounded-full flex items-center justify-center cursor-pointer`}
+              <motion.div
+                className={`w-8 h-8 ${card.color} rounded-full flex items-center justify-center cursor-pointer`}
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
-                onHoverStart={() => setHoveredIcon(`icon-${currentCard.id}`)}
+                onHoverStart={() => setHoveredIcon(`icon-${card.id}`)}
                 onHoverEnd={() => setHoveredIcon(null)}
               >
-                <span className="text-lg">{currentCard.icon}</span>
+                <span className="text-lg">{card.icon}</span>
               </motion.div>
             </div>
-            <div className="font-medium mb-2">{currentCard.title}</div>
+            <div className="font-medium mb-2">{card.title}</div>
             <div className="text-xs text-gray-500">Title</div>
             <div className="border border-gray-200 rounded px-3 py-2 text-sm mb-3">
-              {currentCard.title} request
+              {card.title} request
             </div>
             <div className="flex gap-2 mb-2">
-              <button className={`bg-${currentCard.color.split('-')[1]}-100 text-${currentCard.color.split('-')[1]}-700 px-3 py-1 rounded text-xs`}>{currentCard.title}</button>
+              <button className={`bg-${card.color.split('-')[1]}-100 text-${card.color.split('-')[1]}-700 px-3 py-1 rounded text-xs`}>{card.title}</button>
               <button className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-xs">Custom</button>
             </div>
             <div className="text-xs text-gray-500">Description</div>
             <div className="text-sm mb-3">
-              {currentCard.description}...
+              {card.description}...
             </div>
-            
+           
             <AnimatePresence>
-              {hoveredIcon === `icon-${currentCard.id}` && (
+              {hoveredIcon === `icon-${card.id}` && (
                 <motion.div
                   className="absolute bg-white rounded-lg p-3 shadow-lg border border-gray-200 z-50 w-48 right-0 top-10"
                   initial={{ opacity: 0, scale: 0.8, y: -10 }}
@@ -225,8 +226,8 @@ const RenderCardContent = () => {
                   exit={{ opacity: 0, scale: 0.8, y: -10 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                  <h3 className="font-medium text-sm mb-1">{currentCard.title} Options</h3>
-                  <p className="text-xs text-gray-600">Configure your {currentCard.title.toLowerCase()} settings</p>
+                  <h3 className="font-medium text-sm mb-1">{card.title} Options</h3>
+                  <p className="text-xs text-gray-600">Configure your {card.title.toLowerCase()} settings</p>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -235,4 +236,7 @@ const RenderCardContent = () => {
     }
   };
 
-  return RenderCardContent();
+  return renderCardContent();
+};
+
+export default HoverCard;
