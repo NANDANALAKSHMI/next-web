@@ -1,111 +1,119 @@
 'use client'
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform, useAnimation } from 'framer-motion';
 
 const HeroSection = () => {
-  // Animation positions for the floating cards
   const [positions, setPositions] = useState([]);
-  // Track which card is being hovered
   const [hoveredCard, setHoveredCard] = useState(null);
-  // Track if any icon within a hover card is being hovered
   const [hoveredIcon, setHoveredIcon] = useState(null);
-  
-  // Define the floating card icons and their initial positions
+
+  const heroRef = useRef(null);
+  const dropBoxRef = useRef(null);
+  const svgRef = useRef(null); // Ref for the SVG element
+
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"]
+  });
+
+
   const floatingCards = [
-    { 
-      id: 1, 
-      icon: "📋", 
-      color: "bg-blue-100", 
-      left: "10%", 
-      top: "15%", 
-      title: "Task List", 
+    {
+      id: 1,
+      icon: "📋",
+      color: "bg-blue-100",
+      left: "10%",
+      top: "15%",
+      title: "Task List",
       description: "Organize and prioritize your feedback items",
       cardType: "taskList"
     },
-    { 
-      id: 2, 
-      icon: "📝", 
-      color: "bg-red-100", 
-      left: "85%", 
-      top: "20%", 
-      title: "Notes", 
+    {
+      id: 2,
+      icon: "📝",
+      color: "bg-red-100",
+      left: "85%",
+      top: "20%",
+      title: "Notes",
       description: "Capture important details from customers",
       cardType: "notes"
     },
-    { 
-      id: 3, 
-      icon: "📊", 
-      color: "bg-gray-100", 
-      left: "25%", 
-      top: "35%", 
-      title: "Analytics", 
+    {
+      id: 3,
+      icon: "📊",
+      color: "bg-gray-100",
+      left: "25%",
+      top: "35%",
+      title: "Analytics",
       description: "Track feedback trends and insights",
       cardType: "analytics"
     },
-    { 
-      id: 4, 
-      icon: "📱", 
-      color: "bg-purple-100", 
-      left: "75%", 
-      top: "40%", 
-      title: "Mobile", 
+    {
+      id: 4,
+      icon: "📱",
+      color: "bg-purple-100",
+      left: "75%",
+      top: "40%",
+      title: "Mobile",
       description: "Capture feedback on the go",
       cardType: "mobile"
     },
-    { 
-      id: 5, 
-      icon: "🔍", 
-      color: "bg-orange-100", 
-      left: "30%", 
-      top: "65%", 
-      title: "Search", 
+    {
+      id: 5,
+      icon: "🔍",
+      color: "bg-orange-100",
+      left: "30%",
+      top: "65%",
+      title: "Search",
       description: "Find feedback items quickly",
       cardType: "search"
     },
-    { 
-      id: 6, 
-      icon: "📁", 
-      color: "bg-blue-100", 
-      left: "15%", 
-      top: "80%", 
-      title: "Files", 
+    {
+      id: 6,
+      icon: "📁",
+      color: "bg-blue-100",
+      left: "15%",
+      top: "80%",
+      title: "Files",
       description: "Attach relevant documents to feedback",
       cardType: "files"
     },
-    { 
-      id: 7, 
-      icon: "🗂️", 
-      color: "bg-green-100", 
-      left: "50%", 
-      top: "90%", 
-      title: "Categories", 
+    {
+      id: 7,
+      icon: "🗂️",
+      color: "bg-green-100",
+      left: "50%",
+      top: "90%",
+      title: "Categories",
       description: "Organize feedback by topic",
       cardType: "categories"
     },
-    { 
-      id: 8, 
-      icon: "🔊", 
-      color: "bg-blue-200", 
-      left: "70%", 
-      top: "75%", 
-      title: "Announcements", 
+    {
+      id: 8,
+      icon: "🔊",
+      color: "bg-blue-200",
+      left: "70%",
+      top: "75%",
+      title: "Announcements",
       description: "Share updates with your team",
       cardType: "announcements"
     },
-    { 
-      id: 9, 
-      icon: "⭐", 
-      color: "bg-purple-200", 
-      left: "90%", 
-      top: "60%", 
-      title: "Favorites", 
+    {
+      id: 9,
+      icon: "⭐",
+      color: "bg-purple-200",
+      left: "90%",
+      top: "60%",
+      title: "Favorites",
       description: "Save important feedback items",
       cardType: "favorites"
     },
   ];
 
+  const [dropBoxPosition, setDropBoxPosition] = useState({ x: 0, y: 0 });
+  const [svgPosition, setSvgPosition] = useState({ x: 0, y: 0 }); // State for SVG position
+
   useEffect(() => {
-    // Initialize positions
     setPositions(floatingCards.map(card => ({
       id: card.id,
       x: 0,
@@ -113,8 +121,7 @@ const HeroSection = () => {
       left: card.left,
       top: card.top
     })));
-    
-    // Create subtle animation effect
+
     const interval = setInterval(() => {
       setPositions(prev => prev.map(pos => ({
         ...pos,
@@ -122,23 +129,46 @@ const HeroSection = () => {
         y: pos.y + (Math.random() * 4 - 2)
       })));
     }, 2000);
-    
-    return () => clearInterval(interval);
+
+    // Update dropbox and SVG positions
+    const updatePositions = () => {
+      if (dropBoxRef.current) {
+        const dropBoxRect = dropBoxRef.current.getBoundingClientRect();
+        setDropBoxPosition({
+          x: dropBoxRect.left + dropBoxRect.width / 2,
+          y: dropBoxRect.top + dropBoxRect.height / 2,
+        });
+      }
+
+      if (svgRef.current) {
+        const svgRect = svgRef.current.getBoundingClientRect();
+        setSvgPosition({
+          x: svgRect.left + svgRect.width / 2,
+          y: svgRect.top + svgRect.height / 2,
+        });
+      }
+    };
+
+    updatePositions();
+    window.addEventListener('resize', updatePositions);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', updatePositions);
+    };
   }, []);
 
-  // Component to render different card types based on the hovered card
   const HoverCard = ({ card, position }) => {
     const currentCard = floatingCards.find(c => c.id === card);
-    
-    // Different card components based on card type
+
     const renderCardContent = () => {
-      switch(currentCard.cardType) {
+      switch (currentCard.cardType) {
         case 'taskList':
           return (
             <div className="border border-blue-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-xs text-gray-500">TASKS</div>
-                <motion.div 
+                <motion.div
                   className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center cursor-pointer"
                   whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
@@ -179,13 +209,13 @@ const HeroSection = () => {
               </AnimatePresence>
             </div>
           );
-        
+
         case 'notes':
           return (
             <div className="border border-red-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-xs text-gray-500">NOTES</div>
-                <motion.div 
+                <motion.div
                   className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center cursor-pointer"
                   whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
@@ -216,13 +246,13 @@ const HeroSection = () => {
               </AnimatePresence>
             </div>
           );
-          
+
         case 'analytics':
           return (
             <div className="border border-gray-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-xs text-gray-500">ANALYTICS</div>
-                <motion.div 
+                <motion.div
                   className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center cursor-pointer"
                   whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
@@ -272,13 +302,13 @@ const HeroSection = () => {
               </AnimatePresence>
             </div>
           );
-          
+
         case 'mobile':
           return (
             <div className="border border-purple-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-xs text-gray-500">MOBILE</div>
-                <motion.div 
+                <motion.div
                   className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center cursor-pointer"
                   whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
@@ -316,14 +346,13 @@ const HeroSection = () => {
               </AnimatePresence>
             </div>
           );
-          
-        // For other card types, we'll use a generic feedback card template with customizations
+
         default:
           return (
             <div className={`border border-${currentCard.color.split('-')[1]}-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64 z-10`}>
               <div className="flex items-center justify-between mb-1">
                 <div className="text-xs text-gray-500">CYCLE</div>
-                <motion.div 
+                <motion.div
                   className={`w-8 h-8 ${currentCard.color} rounded-full flex items-center justify-center cursor-pointer`}
                   whileHover={{ scale: 1.2 }}
                   whileTap={{ scale: 0.9 }}
@@ -346,7 +375,7 @@ const HeroSection = () => {
               <div className="text-sm mb-3">
                 {currentCard.description}...
               </div>
-              
+
               <AnimatePresence>
                 {hoveredIcon === `icon-${currentCard.id}` && (
                   <motion.div
@@ -370,9 +399,34 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden py-16">
+    <div className="relative w-full h-screen overflow-hidden py-16" ref={heroRef}>
       {floatingCards.map((card) => {
         const position = positions.find(pos => pos.id === card.id) || { x: 0, y: 0, left: card.left, top: card.top };
+
+        const cardX = useTransform(
+          scrollYProgress,
+          [0, 0.8],
+          [position.x, svgPosition.x] 
+        );
+
+        const cardY = useTransform(
+          scrollYProgress,
+          [0, 0.8],
+          [position.y, svgPosition.y] 
+        );
+
+        const cardScale = useTransform(
+          scrollYProgress,
+          [0, 0.8, 1],
+          [1, 0.8, 0.5]
+        );
+
+        const cardOpacity = useTransform(
+          scrollYProgress,
+          [0, 0.7, 1],
+          [1, 0.8, 0]
+        );
+
         return (
           <React.Fragment key={card.id}>
             <motion.div
@@ -381,28 +435,22 @@ const HeroSection = () => {
                 left: position.left,
                 top: position.top,
                 zIndex: hoveredCard === card.id ? 30 : 10,
+                x: cardX,
+                y: cardY,
+                scale: cardScale,
+                opacity: cardOpacity,
               }}
               initial={{ scale: 1 }}
-              animate={{ 
-                scale: [1, 1.05, 1],
-                x: position.x,
-                y: position.y,
-              }}
-              transition={{ 
-                scale: { repeat: Infinity, duration: 2 },
-                x: { duration: 2 },
-                y: { duration: 2 }
-              }}
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.9 }}
-              onHoverStart={() => setHoveredCard(card.id)}
+              whileHover={{ scale: scrollYProgress.get() > 0.5 ? 1 : 1.2 }}
+              whileTap={{ scale: scrollYProgress.get() > 0.5 ? 0.9 : 0.9 }}
+              onHoverStart={() => scrollYProgress.get() < 0.5 && setHoveredCard(card.id)}
               onHoverEnd={() => setHoveredCard(null)}
             >
               <span className="text-xl">{card.icon}</span>
             </motion.div>
 
             <AnimatePresence>
-              {hoveredCard === card.id && (
+              {hoveredCard === card.id && scrollYProgress.get() < 0.5 && (
                 <motion.div
                   className="absolute bg-white z-40"
                   style={{
@@ -421,45 +469,87 @@ const HeroSection = () => {
           </React.Fragment>
         );
       })}
-  
+
       <div className="relative z-20 container mx-auto px-4 text-center xl:pt-32 pt-10">
-        <motion.h1 
+        <motion.h1
           className="text-[60px] font-bold text-gray-900 mb-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          style={{
+            opacity: useTransform(scrollYProgress, [0, 0.5], [1, 0]),
+            y: useTransform(scrollYProgress, [0, 0.5], [0, -50])
+          }}
         >
           Your feedback hub,<br />on autopilot
         </motion.h1>
-        
-        <motion.p 
+
+        <motion.p
           className="text-lg text-gray-600 max-w-2xl mx-auto mb-12"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
+          style={{
+            opacity: useTransform(scrollYProgress, [0, 0.4], [1, 0]),
+            y: useTransform(scrollYProgress, [0, 0.4], [0, -20])
+          }}
         >
-          Cycle is the fastest way for your team to capture product 
+          Cycle is the fastest way for your team to capture product
           feedback and share customer insights – without the busywork.
         </motion.p>
-       
-        <motion.div 
+
+        <motion.div
           className="max-w-2xl mx-auto bg-white rounded-lg p-8 shadow-md border border-gray-100"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
+          ref={dropBoxRef}
+          style={{
+            scale: useTransform(scrollYProgress, [0, 1], [1, 1.2]),
+            y: useTransform(scrollYProgress, [0, 1], [0, -50])
+          }}
         >
-          <motion.div 
-            className="w-16 h-16 bg-blue-100 rounded-full mx-auto mb-4 flex items-center justify-center"
-            whileHover={{ scale: 1.1, rotate: 10 }}
-            whileTap={{ scale: 0.9 }}
+          <motion.div
+        className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center"
+        animate={{
+          y: [0, -10, 0], // Floating effect
+          rotate: [0, 5, -5, 0], // Gentle rotation
+          scale: [1, 1.05, 1], // Slight pulsing effect
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          repeatType: "mirror",
+          ease: "easeInOut",
+        }}
+        whileHover={{ scale: 1.1, rotate: 10 }}
+        whileTap={{ scale: 0.9 }}
+        style={{
+          rotate: useTransform(scrollYProgress, [0.5, 0.8], [0, 360]),
+          scale: useTransform(scrollYProgress, [0.5, 0.8], [1, 1.3]),
+        }}
+      >
+        <img src="/bubble.png" alt="" className="w-full h-full rounded-full" />
+      </motion.div>
+          <p className="text-lg text-gray-700">Drop anything to capture feedback</p>
+
+          <motion.div
+            className="mt-6 text-sm text-gray-500 flex items-center justify-center"
+            style={{
+              opacity: useTransform(scrollYProgress, [0, 0.3], [1, 0])
+            }}
+            ref={svgRef}
           >
-            <svg className="w-8 h-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 mr-2 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
+            Scroll to collect feedback elements
           </motion.div>
-          <p className="text-lg text-gray-700">Drop anything to capture feedback</p>
         </motion.div>
+       
       </div>
+
+      <div className="h-screen"></div>
     </div>
   );
 };
