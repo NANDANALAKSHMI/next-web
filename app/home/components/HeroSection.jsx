@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform, useAnimation } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 
 const HeroSection = () => {
   const [positions, setPositions] = useState([]);
@@ -9,13 +9,12 @@ const HeroSection = () => {
 
   const heroRef = useRef(null);
   const dropBoxRef = useRef(null);
-  const svgRef = useRef(null); // Ref for the SVG element
+  const svgRef = useRef(null);
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"]
   });
-
 
   const floatingCards = [
     {
@@ -111,7 +110,7 @@ const HeroSection = () => {
   ];
 
   const [dropBoxPosition, setDropBoxPosition] = useState({ x: 0, y: 0 });
-  const [svgPosition, setSvgPosition] = useState({ x: 0, y: 0 }); // State for SVG position
+  const [svgPosition, setSvgPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     setPositions(floatingCards.map(card => ({
@@ -130,7 +129,6 @@ const HeroSection = () => {
       })));
     }, 2000);
 
-    // Update dropbox and SVG positions
     const updatePositions = () => {
       if (dropBoxRef.current) {
         const dropBoxRect = dropBoxRef.current.getBoundingClientRect();
@@ -162,7 +160,7 @@ const HeroSection = () => {
     const currentCard = floatingCards.find(c => c.id === card);
 
     const renderCardContent = () => {
-      switch (currentCard.cardType) {
+      switch(currentCard.cardType) {
         case 'taskList':
           return (
             <div className="border border-blue-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64">
@@ -209,7 +207,7 @@ const HeroSection = () => {
               </AnimatePresence>
             </div>
           );
-
+       
         case 'notes':
           return (
             <div className="border border-red-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64">
@@ -246,7 +244,7 @@ const HeroSection = () => {
               </AnimatePresence>
             </div>
           );
-
+         
         case 'analytics':
           return (
             <div className="border border-gray-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64">
@@ -302,7 +300,7 @@ const HeroSection = () => {
               </AnimatePresence>
             </div>
           );
-
+         
         case 'mobile':
           return (
             <div className="border border-purple-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64">
@@ -346,7 +344,7 @@ const HeroSection = () => {
               </AnimatePresence>
             </div>
           );
-
+         
         default:
           return (
             <div className={`border border-${currentCard.color.split('-')[1]}-300 border-dashed rounded-lg p-4 bg-white shadow-sm w-64 z-10`}>
@@ -375,7 +373,7 @@ const HeroSection = () => {
               <div className="text-sm mb-3">
                 {currentCard.description}...
               </div>
-
+             
               <AnimatePresence>
                 {hoveredIcon === `icon-${currentCard.id}` && (
                   <motion.div
@@ -400,75 +398,76 @@ const HeroSection = () => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden py-16" ref={heroRef}>
-      {floatingCards.map((card) => {
-        const position = positions.find(pos => pos.id === card.id) || { x: 0, y: 0, left: card.left, top: card.top };
+{floatingCards.map((card) => {
+  const position = positions.find(pos => pos.id === card.id) || { x: 0, y: 0, left: card.left, top: card.top };
 
-        const cardX = useTransform(
-          scrollYProgress,
-          [0, 0.8],
-          [position.x, svgPosition.x] 
-        );
+  const cardX = useTransform(
+    scrollYProgress,
+    [0, 0.8],
+    [0, dropBoxPosition.x - (parseFloat(card.left) * (window.innerWidth / 100))]
+  );
 
-        const cardY = useTransform(
-          scrollYProgress,
-          [0, 0.8],
-          [position.y, svgPosition.y] 
-        );
+  const cardY = useTransform(
+    scrollYProgress,
+    [0, 0.8],
+    [0, dropBoxPosition.y - (parseFloat(card.top) * (window.innerHeight / 100))]
+  );
 
-        const cardScale = useTransform(
-          scrollYProgress,
-          [0, 0.8, 1],
-          [1, 0.8, 0.5]
-        );
+  const cardScale = useTransform(
+    scrollYProgress,
+    [0, 0.8, 1],
+    [1, 0.8, 0.5]
+  );
 
-        const cardOpacity = useTransform(
-          scrollYProgress,
-          [0, 0.7, 1],
-          [1, 0.8, 0]
-        );
+  const cardOpacity = useTransform(
+    scrollYProgress,
+    [0, 0.7, 1],
+    [1, 0.8, 0]
+  );
 
-        return (
-          <React.Fragment key={card.id}>
-            <motion.div
-              className={`absolute ${card.color} p-4 w-12 h-12 rounded-full flex items-center justify-center shadow-md cursor-pointer`}
-              style={{
-                left: position.left,
-                top: position.top,
-                zIndex: hoveredCard === card.id ? 30 : 10,
-                x: cardX,
-                y: cardY,
-                scale: cardScale,
-                opacity: cardOpacity,
-              }}
-              initial={{ scale: 1 }}
-              whileHover={{ scale: scrollYProgress.get() > 0.5 ? 1 : 1.2 }}
-              whileTap={{ scale: scrollYProgress.get() > 0.5 ? 0.9 : 0.9 }}
-              onHoverStart={() => scrollYProgress.get() < 0.5 && setHoveredCard(card.id)}
-              onHoverEnd={() => setHoveredCard(null)}
-            >
-              <span className="text-xl">{card.icon}</span>
-            </motion.div>
+  return (
+    <React.Fragment key={card.id}>
+      <motion.div
+        className={`absolute ${card.color} p-4 w-12 h-12 rounded-full flex items-center justify-center shadow-md cursor-pointer`}
+        style={{
+          left: position.left,
+          top: position.top,
+          zIndex: hoveredCard === card.id ? 30 : 10,
+          x: cardX,
+          y: cardY,
+          scale: cardScale,
+          opacity: cardOpacity,
+        }}
+        initial={{ scale: 1 }}
+        whileHover={{ scale: scrollYProgress.get() > 0.5 ? 1 : 1.2 }}
+        whileTap={{ scale: scrollYProgress.get() > 0.5 ? 0.9 : 0.9 }}
+        onHoverStart={() => scrollYProgress.get() < 0.5 && setHoveredCard(card.id)}
+        onHoverEnd={() => setHoveredCard(null)}
+      >
+        <span className="text-xl">{card.icon}</span>
+      </motion.div>
 
-            <AnimatePresence>
-              {hoveredCard === card.id && scrollYProgress.get() < 0.5 && (
-                <motion.div
-                  className="absolute bg-white z-40"
-                  style={{
-                    left: `calc(${position.left} + 20px)`,
-                    top: `calc(${position.top} + 20px)`,
-                  }}
-                  initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                  animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, y: 10 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  <HoverCard card={card.id} position={position} />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </React.Fragment>
-        );
-      })}
+      <AnimatePresence>
+        {hoveredCard === card.id && scrollYProgress.get() < 0.5 && (
+          <motion.div
+            className="absolute bg-white z-40"
+            style={{
+              left: `calc(${position.left} + 20px)`,
+              top: `calc(${position.top} + 20px)`,
+            }}
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 10 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+            <HoverCard card={card.id} position={position} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </React.Fragment>
+  );
+})}
+      
 
       <div className="relative z-20 container mx-auto px-4 text-center xl:pt-32 pt-10">
         <motion.h1
@@ -510,27 +509,17 @@ const HeroSection = () => {
           }}
         >
           <motion.div
-        className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center"
-        animate={{
-          y: [0, -10, 0], // Floating effect
-          rotate: [0, 5, -5, 0], // Gentle rotation
-          scale: [1, 1.05, 1], // Slight pulsing effect
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          repeatType: "mirror",
-          ease: "easeInOut",
-        }}
-        whileHover={{ scale: 1.1, rotate: 10 }}
-        whileTap={{ scale: 0.9 }}
-        style={{
-          rotate: useTransform(scrollYProgress, [0.5, 0.8], [0, 360]),
-          scale: useTransform(scrollYProgress, [0.5, 0.8], [1, 1.3]),
-        }}
-      >
-        <img src="/bubble.png" alt="" className="w-full h-full rounded-full" />
-      </motion.div>
+            className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center"
+            whileHover={{ scale: 1.1, rotate: 10 }}
+            whileTap={{ scale: 0.9 }}
+            style={{
+              rotate: useTransform(scrollYProgress, [0.5, 0.8], [0, 360]),
+              scale: useTransform(scrollYProgress, [0.5, 0.8], [1, 1.3])
+            }}
+          >
+            <img src="/bubble.png" alt="" className="w-full h-full rounded-full" />
+
+          </motion.div>
           <p className="text-lg text-gray-700">Drop anything to capture feedback</p>
 
           <motion.div
@@ -546,9 +535,7 @@ const HeroSection = () => {
             Scroll to collect feedback elements
           </motion.div>
         </motion.div>
-       
       </div>
-
       <div className="h-screen"></div>
     </div>
   );
