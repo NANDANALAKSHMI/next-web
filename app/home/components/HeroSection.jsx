@@ -112,7 +112,7 @@ const HeroSection = () => {
   
 
   return (
-    <div className="relative w-full h-screen overflow-hidden py-16" ref={heroRef}>
+    <div className="relative w-full md:h-screen h-full overflow-hidden py-16" ref={heroRef}>
       <FloatingCards 
         floatingCards={floatingCards} 
         scrollYProgress={scrollYProgress} 
@@ -155,7 +155,7 @@ const HeroSection = () => {
           dropBoxRef={dropBoxRef}
         />
       </div>
-      <div className="h-screen"></div>
+      <div className="md:h-screen"></div>
     </div>
   );
 };
