@@ -13,7 +13,7 @@ const PageContent = () => {
                         <FeedbackSourceCard />
                     </div>
                     <div className='md:col-span-7 bg-white rounded-[23px] p-8'>
-                        <div className="grid grid-cols-2 gap-8">
+                        <div className="grid md:grid-cols-2 grid-cols-1 gap-8">
                             <TopFeatureRequests />
                             <FeedbackStatus />
                             <CustomerQuotes />
@@ -26,7 +26,7 @@ const PageContent = () => {
     )
 }
 
-// Reusable scroll-triggered section component
+
 const ScrollTriggeredSection = ({ children }) => {
     const ref = React.useRef(null)
     const isInView = useInView(ref, { once: false, amount: 0.1 })
@@ -200,7 +200,7 @@ const FeedbackStatus = () => {
 
                 <div className="flex justify-center">
                     <div className="relative w-32 h-32">
-                        {/* Blue segment */}
+                      
                         <motion.div
                             className="absolute w-32 h-32"
                             initial={{ opacity: 0 }}
@@ -222,7 +222,6 @@ const FeedbackStatus = () => {
                             </svg>
                         </motion.div>
 
-                        {/* Pink segment */}
                         <motion.div
                             className="absolute w-32 h-32"
                             initial={{ opacity: 0 }}
@@ -243,8 +242,6 @@ const FeedbackStatus = () => {
                                 />
                             </svg>
                         </motion.div>
-
-                        {/* Green segment */}
                         <motion.div
                             className="absolute w-32 h-32"
                             initial={{ opacity: 0 }}
@@ -265,16 +262,12 @@ const FeedbackStatus = () => {
                                 />
                             </svg>
                         </motion.div>
-
-                        {/* Center circle */}
                         <motion.div
                             className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full"
                             initial={{ scale: 0 }}
                             animate={isInView ? { scale: 1 } : { scale: 0 }}
                             transition={{ duration: 0.3, delay: 0.7 }}
                         />
-
-                        {/* Dots beside circle */}
                         <motion.div
                             className="absolute top-1/2 right-0 transform translate-x-6 -translate-y-6 space-y-1"
                             initial={{ opacity: 0 }}

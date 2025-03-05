@@ -124,7 +124,7 @@ const HeroSection = () => {
       
       <div className="relative z-20 container mx-auto px-4 text-center xl:pt-32 pt-10">
         <motion.h1
-          className="text-[60px] font-bold text-gray-900 mb-4"
+          className="md:text-[60px] text-[45px] font-bold text-gray-900 mb-4"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
