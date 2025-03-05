@@ -64,7 +64,6 @@ const Feedback = () => {
     }
   ];
 
-  // Animation variants
   const cardVariants = {
     hover: { 
       scale: 1.05,
@@ -154,7 +153,7 @@ const Feedback = () => {
         {subImages.map((image, index) => (
           <motion.div 
             key={image.src}
-            className={`absolute ${image.position} w-[25%] h-[150px] z-10`}
+            className={`absolute ${image.position} w-[25%] md:h-[150px] h-[40px] z-10`}
             variants={imageVariants}
             initial="initial"
             animate="animate"
